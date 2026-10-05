@@ -49,7 +49,7 @@ function useSceneProgress() {
 }
 
 function LeadFormModal({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const [answers, setAnswers] = useState({ situation: '', employment: '', documents: '' });
+  const [answers, setAnswers] = useState({ situation: '', employment: '', timing: '', documents: '' });
 
   useEffect(() => {
     if (!open) return;
@@ -60,7 +60,7 @@ function LeadFormModal({ open, onClose }: { open: boolean; onClose: () => void }
 
   if (!open) return null;
 
-  const canSubmit = answers.situation && answers.employment && answers.documents;
+  const canSubmit = answers.situation && answers.employment && answers.timing && answers.documents;
 
   const submit = () => {
     if (!canSubmit) return;
@@ -69,6 +69,7 @@ function LeadFormModal({ open, onClose }: { open: boolean; onClose: () => void }
       '',
       `Situação principal: ${answers.situation}`,
       `Vínculo atual: ${answers.employment}`,
+      `Quando aconteceu ou começou: ${answers.timing}`,
       `Possui documentos relacionados: ${answers.documents}`,
     ].join('\n');
 
@@ -77,12 +78,12 @@ function LeadFormModal({ open, onClose }: { open: boolean; onClose: () => void }
   };
 
   return (
-    <div className="lead-modal-backdrop" role="dialog" aria-modal="true" aria-label="Questionário inicial">
+    <div className="lead-modal-backdrop" role="dialog" aria-modal="true" aria-label="Questionário de qualificação trabalhista">
       <div className="lead-modal">
         <button className="lead-modal-close" onClick={onClose} aria-label="Fechar">×</button>
         <span className="eyebrow">ANTES DE FALAR</span>
         <h2>Conte rapidamente o que aconteceu.</h2>
-        <p className="lead-modal-intro">Responda 3 perguntas. As respostas serão enviadas junto com sua mensagem para o WhatsApp do Dr. Wilian.</p>
+        <p className="lead-modal-intro">Responda 4 perguntas rápidas. As respostas serão enviadas junto com sua mensagem para o WhatsApp do Dr. Wilian.</p>
 
         <label><span>1. Qual é o principal problema no trabalho?</span>
           <select value={answers.situation} onChange={(e) => setAnswers({ ...answers, situation: e.target.value })}>
@@ -102,7 +103,18 @@ function LeadFormModal({ open, onClose }: { open: boolean; onClose: () => void }
           </select>
         </label>
 
-        <label><span>3. Você possui documentos relacionados ao caso?</span>
+        <label><span>3. Quando aconteceu ou começou essa situação?</span>
+          <select value={answers.timing} onChange={(e) => setAnswers({ ...answers, timing: e.target.value })}>
+            <option value="">Selecione uma opção</option>
+            <option>Está acontecendo atualmente</option>
+            <option>Começou há menos de 3 meses</option>
+            <option>Começou entre 3 e 12 meses</option>
+            <option>Aconteceu há mais de 1 ano</option>
+            <option>Não tenho certeza</option>
+          </select>
+        </label>
+
+        <label><span>4. Você possui documentos relacionados ao caso?</span>
           <select value={answers.documents} onChange={(e) => setAnswers({ ...answers, documents: e.target.value })}>
             <option value="">Selecione uma opção</option>
             <option>Sim, tenho documentos</option><option>Tenho alguns documentos</option>
@@ -185,9 +197,10 @@ function DesktopPage() {
 
       <section id="sobre" className="editorial-section about-section"><div className="container editorial-grid"><div><span className="eyebrow">SOBRE</span><h2>Uma advocacia construída em torno de <em>clareza.</em></h2></div><div><p>Questões trabalhistas podem envolver documentos, prazos e decisões importantes. O atendimento começa pela compreensão do contexto, organização das informações e explicação objetiva das possibilidades.</p><LeadButton onOpen={() => setLeadOpen(true)} className="text-btn">Conversar sobre meu caso <Arrow /></LeadButton></div></div></section>
       <section id="processo" className="process-section"><div className="container"><div className="process-title"><span className="eyebrow">PROCESSO</span><h2>Sem complicar.</h2><p>Um caminho simples para sair da dúvida e chegar aos próximos passos.</p></div><div className="process-list"><div><h3>Você conta</h3><p>Conte o que aconteceu, quando começou a situação e quais foram os principais acontecimentos. Você pode apresentar suas dúvidas, explicar como era sua rotina de trabalho e indicar o que mudou ao longo do vínculo.</p></div><div><h3>Nós analisamos</h3><p>Organizamos as informações e analisamos os documentos disponíveis, como contrato, holerites, registros de ponto, mensagens e documentos de rescisão. A partir desse contexto, identificamos os pontos que merecem atenção jurídica.</p></div><div><h3>Você entende</h3><p>Depois da análise, você recebe uma explicação clara sobre o cenário apresentado, as possibilidades existentes e quais podem ser os próximos passos. A decisão é tomada com mais informação e segurança.</p></div></div></div></section>
-      <section className="final-cta"><div><span className="eyebrow inverse">CONTATO</span><h2>Tem uma questão trabalhista?</h2><p>Conte brevemente o que aconteceu e inicie uma conversa.</p></div><a className="solid-btn whatsapp-btn" href={WHATSAPP}>Falar no WhatsApp <Arrow /></a></section>
+      <section className="final-cta"><div><span className="eyebrow inverse">CONTATO</span><h2>Tem uma questão trabalhista?</h2><p>Conte brevemente o que aconteceu e inicie uma conversa.</p></div><LeadButton onOpen={() => setLeadOpen(true)} className="solid-btn whatsapp-btn">Falar no WhatsApp <Arrow /></LeadButton></section>
       <section id="faq" className="faq-section"><div className="container faq-grid"><div><span className="eyebrow">DÚVIDAS</span><h2>Antes de <em>falar.</em></h2></div><div>{faq.map(([q, a]) => <details key={q}><summary>{q}<span>+</span></summary><p>{a}</p></details>)}</div></div></section>
-      <footer className="footer-dark"><div className="container footer-inner"><div><div className="wordmark footer-mark"><span className="wn-logo">WN</span></div><small>Advocacia Trabalhista · OAB/UF 000.000</small></div><div><a href="#sobre">Sobre</a><a href="#atuacao">Atuação</a><a href="#valor">Investimento</a><a href="#faq">Dúvidas</a></div><a className="outline-btn light-outline" href={WHATSAPP}>WhatsApp <Arrow /></a></div><div className="container legal-note">As informações desta página são informativas e não substituem consulta jurídica individualizada.</div></footer>
+      <footer className="footer-dark"><div className="container footer-inner"><div><div className="wordmark footer-mark"><span className="wn-logo">WN</span></div><small>Advocacia Trabalhista · OAB/UF 000.000</small></div><div><a href="#sobre">Sobre</a><a href="#atuacao">Atuação</a><a href="#valor">Investimento</a><a href="#faq">Dúvidas</a></div><LeadButton onOpen={() => setLeadOpen(true)} className="outline-btn light-outline">WhatsApp <Arrow /></LeadButton></div><div className="container legal-note">As informações desta página são informativas e não substituem consulta jurídica individualizada.</div></footer>
+      <LeadFormModal open={leadOpen} onClose={() => setLeadOpen(false)} />
     </div>
   );
 }
@@ -219,7 +232,7 @@ function MobilePage() {
         <div><h3>Nós analisamos</h3><p>Organizamos as informações e os documentos disponíveis, como contrato, holerites, registros de ponto, mensagens e documentos de rescisão.</p></div>
         <div><h3>Você entende</h3><p>Explicamos o cenário, as possibilidades e os próximos passos para que você possa decidir com mais clareza e segurança.</p></div>
       </section>
-      <section className="final-cta"><div><span className="eyebrow inverse">CONTATO</span><h2>Tem uma questão trabalhista?</h2><p>Responda 3 perguntas rápidas e inicie uma conversa.</p></div>
+      <section className="final-cta"><div><span className="eyebrow inverse">CONTATO</span><h2>Tem uma questão trabalhista?</h2><p>Responda 4 perguntas rápidas e inicie uma conversa.</p></div>
         <LeadButton onOpen={() => setLeadOpen(true)} className="solid-btn whatsapp-btn">Falar no WhatsApp <Arrow /></LeadButton>
       </section>
       <section className="mobile-faq"><span className="eyebrow">DÚVIDAS</span><h2>Antes de <em>falar.</em></h2>
